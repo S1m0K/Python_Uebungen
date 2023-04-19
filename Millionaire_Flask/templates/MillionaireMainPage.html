@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Question</title>
+</head>
+<body>
+<h1>Click on the correct answer</h1>
+
+<h1>{{question.text}}</h1>
+<h2>{{question.level}}</h2>
+{% for answer  in question.answers %}
+    <br><a href="/millionaire/{{loop.index}}">{{answer}}</a><br>
+{% endfor %}
+
+<br/>
+
+{% if feedback %}
+    Last Question: {{feedback}}
+{% endif %}
+</body>
+</html>

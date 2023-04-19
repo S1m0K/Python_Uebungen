@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+    <title>Winner Winner Chicken Dinner</title>
+
+</head>
+<body>
+<h1>Winner Winner Chicken Dinner</h1>
+
+<table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Level</th>
+                <th>Question-Text</th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+                <th>Correct Answer</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for q in questions %}
+            <tr>
+                <td> {{q.level}} </td>
+                <td> {{q.text}} </td>
+                <td> {{q.answers[0]}} </td>
+                <td> {{q.answers[1]}} </td>
+                <td> {{q.answers[2]}} </td>
+                <td> {{q.answers[3]}} </td>
+                <td> {{q.correct}} </td>
+            </tr>
+            {% endfor %}
+        <script>
+        $(document).ready(function () {
+        $('#example').DataTable();});
+        </script>
+
+
+        </tbody>
+</table>
+
+
+
+</body>
+</html>
