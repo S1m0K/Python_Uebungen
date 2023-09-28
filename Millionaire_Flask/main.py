@@ -13,12 +13,13 @@ SESSION_TYPE = 'filesystem'
 app.config.from_object(__name__)
 Session(app)
 
+
 @dataclass
 class Question:
     level: int
     text: str
     correct: str
-    answers: [str,str,str,str]
+    answers: [str, str, str, str]
 
     def __init__(self, level, text, answers):
         self.text = text
@@ -45,9 +46,7 @@ def questions_to_dic():
     thisdict = dict()
     for q in questions:
         thisdict[i] = q
-        i = i+1
-
-
+        i = i + 1
 
     return thisdict
 
@@ -67,18 +66,21 @@ class SimpleData(Resource):
         if questions.__contains__(question):
             return {"Message": "Neu hinzugefügt"}
         return {"Message": "Question konnte nicht upgeloaded werden"}
+
     def patch(self, id):
 
-        data =  data = request.get_json(force=True)
+        data = request.get_json(force=True)
+        q = questions[id];
         if 'correct' in data:
-            info.correct = data['correct']
+            q.correct = data['correct']
         if 'level' in data:
-            info.level = data['level']
+            q.level = data['level']
         if 'text' in data:
-            info.text = data['text']
+            q.text = data['text']
         if 'answers' in data:
-            info.answers = data['answers']
+            q.answers = data['answers']
         return jsonify({'message': 'object with id %d modified' % id})
+
 
 class SimpleAllData(Resource):
     def get(self):
@@ -146,11 +148,11 @@ def getQuestion(level):
 api.add_resource(SimpleData, '/millionaire/questions/<int:id>')
 api.add_resource(SimpleAllData, '/millionaire/questions')
 
+
 @app.route('/millionaire/questions/random')
 def randoQuestion():
-    q = questions[random.randint(0, len(questions)-1)]
+    q = questions[random.randint(0, len(questions) - 1)]
     return jsonify(q)
-
 
 
 @app.route('/millionaire')
