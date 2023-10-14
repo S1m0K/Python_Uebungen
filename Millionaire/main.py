@@ -122,4 +122,6 @@ if __name__ == '__main__':
 
         if level > 4:
             print("Great job you did it!!")
-            return render_template('03_session_object.html', feedback=feedback, question=session['question'])
+            #return render_template('03_session_object.html', feedback=feedback, question=session['question'])
+
+
