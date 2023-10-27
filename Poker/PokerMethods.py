@@ -24,30 +24,28 @@ class PokerMethods:
     def analyze_hand(h):
         colors = []
         numbers = []
-
         for j in range(len(h) - 1):
             numbers.append(h[j][1])
             colors.append(h[j][0])
 
         numbers = sorted(numbers)
-
         cnt_pairs = 0
         for j in range(13):
             # TWO PAIR CHECK
-            if (numbers.count(j + 1) >= 2 and h[-1][7]) or (h[-1][1] is True):
+            if (numbers.count(j) >= 2 and h[-1][7]) or (h[-1][1] is True):
                 h[-1][6] = True
                 cnt_pairs = cnt_pairs + 1
 
             # PAIR CHECK
-            if numbers.count(j + 1) >= 2:
+            if numbers.count(j) >= 2:
                 h[-1][7] = True
 
             # THREE OF A KIND CHECK
-            if numbers.count(j + 1) >= 3:
+            if numbers.count(j) >= 3:
                 h[-1][5] = True
 
             # FOUR OF A KIND CHECK
-            if numbers.count(j + 1) == 4:
+            if numbers.count(j) == 4:
                 h[-1][1] = True
 
             # FULL HOUSE CHECK
@@ -60,7 +58,7 @@ class PokerMethods:
 
         # FLUSH CHECK
         for j in range(4):
-            if colors.count(j + 1) >= 5:
+            if colors.count(j) >= 5:
                 h[-1][3] = True
 
         # STRAIGHT CHECK
