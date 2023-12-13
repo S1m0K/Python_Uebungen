@@ -1,4 +1,6 @@
 import unittest
+
+from Messages import Messages
 from SteganoMethods import SteganoMethods
 
 
@@ -78,5 +80,91 @@ class Tests(unittest.TestCase):
         row_length = SteganoMethods.resolve_row_length(width)
         self.assertEqual(20, row_length)
 
+    def test_read_eight_bit_arr_from_bit_map_content_arr(self):
+        decimal_byte_arr = [254, 249, 254, 174, 116, 144, 138, 125, 146, 0, 0, 0, 14, 201, 255, 127,
+                            127, 127, 76, 177, 34, 0, 0, 0, 56, 53, 196, 110, 174, 55, 190, 184, 202,
+                            0, 0, 0]
+
+        eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, 3, 12)
+        self.assertEqual(["01000001", "00111110", "10010001", "000"], eight_bit_arr)
+
+    def test_update_index(self):
+        index = 7
+        width = 3
+        modul = width * 3
+        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 12)
+        self.assertEqual(8, updated_index)
+        self.assertEqual(9, updated_modul)
+
+        index = 8
+        width = 3
+        modul = width * 3
+        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 12)
+        self.assertEqual(12, updated_index)
+        self.assertEqual(21, updated_modul)
+
+        index = 14
+        width = 5
+        modul = width * 3
+        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 16)
+        self.assertEqual(16, updated_index)
+        self.assertEqual(15 + 16, updated_modul)
+
+        index = 0
+        width = 5
+        modul = width * 3
+        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 16, False)
+        self.assertEqual(0, updated_index)
+        self.assertEqual(modul, updated_modul)
+
+    def test_remove_zero_byte_from_bit_map_arr(self):
+        eight_bit_arr = ["01000001", "00111110", "01110001", "000"]
+        updated_eight_bit_arr = SteganoMethods.remove_zero_byte_from_bit_map_arr(eight_bit_arr)
+        self.assertEqual(["01000001", "00111110", "01110001"], updated_eight_bit_arr)
+        pass
+
+    def test_convert_eight_bit_arr_to_decimal_byte_arr(self):
+        eight_bit_arr = ["01011011", "00111110", "01110001"]
+        decimal_byte_arr = SteganoMethods.convert_eight_bit_arr_to_decimal_byte_arr(eight_bit_arr)
+        self.assertEqual([91, 62, 113], decimal_byte_arr)
+        pass
+
+    def test_convert_decimal_byte_arr_to_char_arr(self):
+        decimal_byte_arr = [65, 80, 113]
+        char_arr = SteganoMethods.convert_decimal_byte_arr_to_char_arr(decimal_byte_arr)
+        self.assertEqual(['A', 'P', 'q'], char_arr)
+        pass
+
+    def test_check_for_necessary_conventions(self):
+        important_values_dic = {"first_bits": "AM", "off_bits": 25, "width": 7, "height": 3,
+                                "color_depth": 24, "compression": 0, "color_table": 1, "row_length": 24}
+        char_arr = ['L', 'u', 'd', 'w', 'i', 'g']
+        message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
+        self.assertTrue(Messages.COLOR_TABLE_NOT_ZERO, message)
+
+        important_values_dic = {"first_bits": "AM", "off_bits": 25, "width": 7, "height": 3,
+                                "color_depth": 20, "compression": 0, "color_table": 0, "row_length": 24}
+        char_arr = ['L', 'u', 'd', 'w', 'i', 'g']
+        message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
+        self.assertTrue(Messages.COLOR_DEPTH_INVALID, message)
+
+        important_values_dic = {"first_bits": "AM", "off_bits": 25, "width": 7, "height": 3,
+                                "color_depth": 24, "compression": 0, "color_table": 0, "row_length": 24}
+        char_arr = ['L', 'u', 'd', 'w', 'i', 'g']
+        message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
+        self.assertTrue(Messages.OK, message)
+
+        important_values_dic = {"first_bits": "CX", "off_bits": 25, "width": 7, "height": 3,
+                                "color_depth": 24, "compression": 0, "color_table": 0, "row_length": 24}
+        char_arr = ['L', 'u', 'd', 'w', 'i', 'g']
+        message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
+        self.assertTrue(Messages.NO_BITMAP_FORMAT, message)
+
+        important_values_dic = {"first_bits": "AM", "off_bits": 25, "width": 2, "height": 2,
+                                "color_depth": 24, "compression": 0, "color_table": 0, "row_length": 24}
+        char_arr = ['L', 'u', 'd', 'w', 'i', 'g', 'L', 'u', 'd', 'w', 'i', 'g']
+        message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
+        self.assertTrue(Messages.SECRET_TO_LONG, message)
+        
     if __name__ == '__main__':
         unittest.main()

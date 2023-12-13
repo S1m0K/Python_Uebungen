@@ -87,10 +87,7 @@ class SteganoMethods:
 
     @staticmethod
     def put_eight_bit_arr_in_bit_map_content_arr(decimal_bit_map_content_arr, eight_bit_arr, row_length, width):
-        bytes_per_row = width * 3
-        modul = bytes_per_row
-        cnt_skip_bytes = row_length - width * 3
-        index = 0
+        index, modul = SteganoMethods.update_index(0, width * 3, width, row_length, False)
 
         for byte in eight_bit_arr:
             for bit_index in range(len(byte)):
@@ -104,30 +101,20 @@ class SteganoMethods:
                     if byte[bit_index] == '0':
                         decimal_bit_map_content_arr[index] = decimal_bit_map_content_arr[index] - 1
                     # else bit stays the same
-                index = index + 1
-
-                if index % modul == 0:
-                    index = index + cnt_skip_bytes
-                    modul = bytes_per_row + index
+                index, modul = SteganoMethods.update_index(index, modul, width, row_length)
 
         return decimal_bit_map_content_arr
 
     @staticmethod
     def put_zero_byte_in_bit_map_content_arr(extended_bit_map_content_arr, starterIndex, row_length, width):
-        index = starterIndex
-        bytes_per_row = width * 3
-        modul = bytes_per_row
-        cnt_skip_bytes = row_length - width * 3
+        index, modul = SteganoMethods.update_index(starterIndex, width * 3, width, row_length, False)
 
         for i in range(8):
-            if index % modul == 0:
-                index = index + cnt_skip_bytes
-                modul = bytes_per_row + index
-
             if extended_bit_map_content_arr[index] % 2 != 0:
                 extended_bit_map_content_arr[index] = extended_bit_map_content_arr[index] - 1
 
-            index = index + 1
+            index, modul = SteganoMethods.update_index(index, modul, width, row_length)
+
         return extended_bit_map_content_arr
 
     @staticmethod
@@ -138,3 +125,68 @@ class SteganoMethods:
             if row_length % 4 == 0:
                 return row_length
             row_length = row_length + 1
+
+    @staticmethod
+    def read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, width, row_length):
+        index, modul = SteganoMethods.update_index(0, width * 3, width, row_length, False)
+        eight_bit_arr = [""]
+        eight_bit_arr_index = 0
+
+        while True:
+            if decimal_byte_arr[index] % 2 == 0:
+                eight_bit_arr[eight_bit_arr_index] = eight_bit_arr[eight_bit_arr_index] + "0"
+            else:
+                eight_bit_arr[eight_bit_arr_index] = eight_bit_arr[eight_bit_arr_index] + "1"
+
+            if len(eight_bit_arr[eight_bit_arr_index]) == 8:
+                if eight_bit_arr[eight_bit_arr_index] == "00000000":
+                    return eight_bit_arr
+
+                eight_bit_arr.append("")
+                eight_bit_arr_index = eight_bit_arr_index + 1
+
+            index, modul = SteganoMethods.update_index(index, modul, width, row_length)
+            if index > (len(decimal_byte_arr) - 1):
+                return eight_bit_arr
+
+    @staticmethod
+    def update_index(index, modul, width, row_length, default_higher_index=True):
+        if default_higher_index:
+            index = index + 1
+
+        if index == 0:
+            return index, modul
+
+        bytes_per_row = width * 3
+        cnt_skip_bytes = row_length - width * 3
+
+        if index % modul == 0:
+            index = index + cnt_skip_bytes
+            modul = bytes_per_row + index
+
+        return index, modul
+
+    @staticmethod
+    def remove_zero_byte_from_bit_map_arr(eight_bit_arr):
+        if '1' not in eight_bit_arr[-1]:
+            return eight_bit_arr[:-1]
+
+        return eight_bit_arr[:-1]
+
+    @staticmethod
+    def convert_eight_bit_arr_to_decimal_byte_arr(eight_bit_arr):
+        decimal_byte_arr = []
+
+        for eight_bit in eight_bit_arr:
+            decimal_byte_arr.append(int(eight_bit, 2))
+
+        return decimal_byte_arr
+
+    @staticmethod
+    def convert_decimal_byte_arr_to_char_arr(decimal_byte_arr):
+        char_arr = []
+
+        for decimal_byte in decimal_byte_arr:
+            char_arr.append(chr(decimal_byte))
+
+        return char_arr
