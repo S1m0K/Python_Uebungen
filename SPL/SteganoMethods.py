@@ -84,7 +84,7 @@ class SteganoMethods:
                                                                                            "row_length"],
                                                                                        important_values_dic["width"])
         finished_bit_map_arr = SteganoMethods.put_zero_byte_in_bit_map_content_arr(extended_bit_map_arr,
-                                                                                   len(secret_word_char_arr) * 8 - 1,
+                                                                                   len(secret_word_char_arr) * 8,
                                                                                    important_values_dic["row_length"],
                                                                                    important_values_dic["width"])
         finished_bit_map_arr = bit_map_bytes_arr[:important_values_dic["off_bits"]] + finished_bit_map_arr

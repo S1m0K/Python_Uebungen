@@ -121,7 +121,7 @@ def button_mode_hide_click():
                                                                       secret_word_char_arr,
                                                                       important_values_dic)
 
-    SteganoMethods.write_bit_map_bytes_arr("./extendedBitMap.bmp", finished_bit_map_arr)
+    SteganoMethods.write_bit_map_bytes_arr("./a.bmp", finished_bit_map_arr)
 
 
 # This function is invoked when the user presses

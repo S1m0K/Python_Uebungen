@@ -88,6 +88,14 @@ class Tests(unittest.TestCase):
         eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, 3, 1, 12)
         self.assertEqual(["01000001", "00111110", "10010001", "000"], eight_bit_arr)
 
+    def test_read_eight_bit_arr_from_bit_map_content_arr_with_stop_byte(self):
+        decimal_byte_arr = [1, 254, 249, 254, 174, 116, 144, 138, 125, 146, 0, 0, 0, 14, 200, 254, 126,
+                            126, 126, 76, 177, 34, 0, 0, 0, 56, 53, 196, 110, 174, 55, 190, 184, 202,
+                            0, 0, 0]
+
+        eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, 3, 1, 12)
+        self.assertEqual(["01000001", "00000000"], eight_bit_arr)
+
     def test_update_index(self):
         index = 7
         width = 3
@@ -119,21 +127,20 @@ class Tests(unittest.TestCase):
 
     def test_remove_zero_byte_from_bit_map_arr(self):
         eight_bit_arr = ["01000001", "00111110", "01110001", "000"]
+
         updated_eight_bit_arr = SteganoMethods.remove_zero_byte_from_bit_map_arr(eight_bit_arr)
         self.assertEqual(["01000001", "00111110", "01110001"], updated_eight_bit_arr)
-        pass
 
     def test_convert_eight_bit_arr_to_decimal_byte_arr(self):
         eight_bit_arr = ["01011011", "00111110", "01110001"]
+
         decimal_byte_arr = SteganoMethods.convert_eight_bit_arr_to_decimal_byte_arr(eight_bit_arr)
         self.assertEqual([91, 62, 113], decimal_byte_arr)
-        pass
 
     def test_convert_decimal_byte_arr_to_char_arr(self):
         decimal_byte_arr = [65, 80, 113]
         char_arr = SteganoMethods.convert_decimal_byte_arr_to_char_arr(decimal_byte_arr)
         self.assertEqual(['A', 'P', 'q'], char_arr)
-        pass
 
     def test_check_for_necessary_conventions(self):
         important_values_dic = {"first_bits": "AM", "off_bits": 25, "width": 7, "height": 3,
@@ -166,5 +173,6 @@ class Tests(unittest.TestCase):
         message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
         self.assertTrue(Messages.SECRET_TO_LONG, message)
 
-    if __name__ == '__main__':
-        unittest.main()
+
+if __name__ == '__main__':
+    unittest.main()
