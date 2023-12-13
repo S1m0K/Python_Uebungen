@@ -101,7 +101,7 @@ def print_image_comparison(ImageDataOffset):
 # the button "Hide secret in image".
 ###### ENTER YOUR CODE HERE ######
 def on_message_not_ok(message):
-    print("Message !!!")
+    print(message)
     pass
 
 
@@ -117,8 +117,11 @@ def button_mode_hide_click():
         on_message_not_ok(message)
         return
 
-    finished_bit_map_arr = SteganoMethods.plant_secret_in_bit_map_arr(bit_map_bytes_arr, secret_word_char_arr,
+    finished_bit_map_arr = SteganoMethods.plant_secret_in_bit_map_arr(bit_map_bytes_arr,
+                                                                      secret_word_char_arr,
                                                                       important_values_dic)
+
+    SteganoMethods.write_bit_map_bytes_arr("./extendedBitMap.bmp", finished_bit_map_arr)
 
 
 # This function is invoked when the user presses
@@ -126,7 +129,25 @@ def button_mode_hide_click():
 ###### ENTER YOUR CODE HERE ######
 def button_mode_disclose_click():
     ClearFeedbackLabels()
-    pass
+    bit_map_decimal_bytes_arr = SteganoMethods.get_bit_map_bytes_arr(path_image.get())
+    important_values_dic = SteganoMethods.get_important_values(bit_map_decimal_bytes_arr)
+
+    message = SteganoMethods.check_for_necessary_conventions(important_values_dic)
+    if message != Messages.OK:
+        on_message_not_ok(message)
+        return
+
+    eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(bit_map_decimal_bytes_arr,
+                                                                               important_values_dic["width"],
+                                                                               important_values_dic["off_bits"],
+                                                                               important_values_dic["row_length"])
+    eight_bit_arr = SteganoMethods.remove_zero_byte_from_bit_map_arr(eight_bit_arr)
+    decimal_byte_arr = SteganoMethods.convert_eight_bit_arr_to_decimal_byte_arr(eight_bit_arr)
+    char_arr = SteganoMethods.convert_decimal_byte_arr_to_char_arr(decimal_byte_arr)
+    secret = ""
+    for char in char_arr:
+        secret = secret + char
+    text_secret.insert("1.0", secret)
 
 
 # The window is divided into three frames.

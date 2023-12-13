@@ -21,11 +21,12 @@ class SteganoMethods:
         file.write(bytearray(bit_map))
 
     @staticmethod
-    def check_for_necessary_conventions(important_values_dic, secret_char_arr):
-        if important_values_dic["width"] * important_values_dic["height"] < len(secret_char_arr) * 3 * 8:
-            return Messages.SECRET_TO_LONG
+    def check_for_necessary_conventions(important_values_dic, secret_char_arr=""):
+        if secret_char_arr != "":
+            if (important_values_dic["width"] * important_values_dic["height"] * 3) < (len(secret_char_arr) * 8):
+                return Messages.SECRET_TO_LONG
 
-        if important_values_dic["first_bits"].equals("BM"):
+        if important_values_dic["first_bits"] != "BM":
             return Messages.NO_BITMAP_FORMAT
 
         if important_values_dic["compression"] != 0:
@@ -73,10 +74,11 @@ class SteganoMethods:
 
     @staticmethod
     def plant_secret_in_bit_map_arr(bit_map_bytes_arr, secret_word_char_arr, important_values_dic):
+        bit_map_content_bytes_arr = bit_map_bytes_arr[important_values_dic["off_bits"]:]
         decimal_char_arr = SteganoMethods.convert_char_arr_to_decimal_char_arr(secret_word_char_arr)
         eight_bit_arr = SteganoMethods.convert_decimal_char_arr_to_eight_bit_seq(decimal_char_arr)
 
-        extended_bit_map_arr = SteganoMethods.put_eight_bit_arr_in_bit_map_content_arr(bit_map_bytes_arr,
+        extended_bit_map_arr = SteganoMethods.put_eight_bit_arr_in_bit_map_content_arr(bit_map_content_bytes_arr,
                                                                                        eight_bit_arr,
                                                                                        important_values_dic[
                                                                                            "row_length"],
@@ -85,6 +87,7 @@ class SteganoMethods:
                                                                                    len(secret_word_char_arr) * 8 - 1,
                                                                                    important_values_dic["row_length"],
                                                                                    important_values_dic["width"])
+        finished_bit_map_arr = bit_map_bytes_arr[:important_values_dic["off_bits"]] + finished_bit_map_arr
 
         return finished_bit_map_arr
 
@@ -147,13 +150,14 @@ class SteganoMethods:
             row_length = row_length + 1
 
     @staticmethod
-    def read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, width, row_length):
+    def read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, width, off_bits, row_length):
+        decimal_content_byte_arr = decimal_byte_arr[off_bits:]
         index, modul = SteganoMethods.update_index(0, width * 3, width, row_length, False)
         eight_bit_arr = [""]
         eight_bit_arr_index = 0
 
         while True:
-            if decimal_byte_arr[index] % 2 == 0:
+            if decimal_content_byte_arr[index] % 2 == 0:
                 eight_bit_arr[eight_bit_arr_index] = eight_bit_arr[eight_bit_arr_index] + "0"
             else:
                 eight_bit_arr[eight_bit_arr_index] = eight_bit_arr[eight_bit_arr_index] + "1"
@@ -166,7 +170,7 @@ class SteganoMethods:
                 eight_bit_arr_index = eight_bit_arr_index + 1
 
             index, modul = SteganoMethods.update_index(index, modul, width, row_length)
-            if index > (len(decimal_byte_arr) - 1):
+            if index > (len(decimal_content_byte_arr) - 1):
                 return eight_bit_arr
 
     @staticmethod

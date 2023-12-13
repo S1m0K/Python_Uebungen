@@ -81,11 +81,11 @@ class Tests(unittest.TestCase):
         self.assertEqual(20, row_length)
 
     def test_read_eight_bit_arr_from_bit_map_content_arr(self):
-        decimal_byte_arr = [254, 249, 254, 174, 116, 144, 138, 125, 146, 0, 0, 0, 14, 201, 255, 127,
+        decimal_byte_arr = [1, 254, 249, 254, 174, 116, 144, 138, 125, 146, 0, 0, 0, 14, 201, 255, 127,
                             127, 127, 76, 177, 34, 0, 0, 0, 56, 53, 196, 110, 174, 55, 190, 184, 202,
                             0, 0, 0]
 
-        eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, 3, 12)
+        eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, 3, 1, 12)
         self.assertEqual(["01000001", "00111110", "10010001", "000"], eight_bit_arr)
 
     def test_update_index(self):
@@ -165,6 +165,6 @@ class Tests(unittest.TestCase):
         char_arr = ['L', 'u', 'd', 'w', 'i', 'g', 'L', 'u', 'd', 'w', 'i', 'g']
         message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
         self.assertTrue(Messages.SECRET_TO_LONG, message)
-        
+
     if __name__ == '__main__':
         unittest.main()
