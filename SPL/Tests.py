@@ -68,10 +68,10 @@ class Tests(unittest.TestCase):
                                      0, 0, 0]
 
         decimal_byte_arr_containing_zero_byte = SteganoMethods.put_zero_byte_in_bit_map_content_arr(
-            extended_decimal_byte_arr, 9, 12, 3)
+            extended_decimal_byte_arr, 8, 12, 3)
 
         extended_decimal_byte_arr_expected = [254, 249, 254, 174, 116, 144, 138, 125, 146, 0, 0, 0, 14, 200, 254, 126,
-                                              126, 126, 76, 176, 34, 0, 0, 0, 56, 53, 196, 110, 174, 55, 191, 185, 203,
+                                              126, 126, 76, 177, 34, 0, 0, 0, 56, 53, 196, 110, 174, 55, 191, 185, 203,
                                               0, 0, 0]
         self.assertEqual(extended_decimal_byte_arr_expected, decimal_byte_arr_containing_zero_byte)
 

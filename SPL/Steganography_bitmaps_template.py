@@ -101,20 +101,24 @@ def print_image_comparison(ImageDataOffset):
 # the button "Hide secret in image".
 ###### ENTER YOUR CODE HERE ######
 def on_message_not_ok(message):
+    print("Message !!!")
     pass
 
 
 def button_mode_hide_click():
     ClearFeedbackLabels()
-    secret_word_char_arr = [char for char in text_secret.get("1.0", "end")]
     bit_map_bytes_arr = SteganoMethods.get_bit_map_bytes_arr(path_image.get())
 
-    message = SteganoMethods.check_for_necessary_conventions(bit_map_bytes_arr, secret_word_char_arr)
+    important_values_dic = SteganoMethods.get_important_values(bit_map_bytes_arr)
+    secret_word_char_arr = [char for char in text_secret.get("1.0", "end")]
+    message = SteganoMethods.check_for_necessary_conventions(important_values_dic, secret_word_char_arr)
+
     if message != Messages.OK:
         on_message_not_ok(message)
         return
 
-    SteganoMethods.plant_secret_in_bit_map_arr(bit_map_bytes_arr, secret_word_char_arr)
+    finished_bit_map_arr = SteganoMethods.plant_secret_in_bit_map_arr(bit_map_bytes_arr, secret_word_char_arr,
+                                                                      important_values_dic)
 
 
 # This function is invoked when the user presses
