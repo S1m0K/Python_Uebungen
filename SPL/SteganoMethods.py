@@ -7,18 +7,26 @@ class SteganoMethods:
     @staticmethod
     def get_bit_map_bytes_arr(path):
         bitMapBytesArr = []
-        file = open(path, "rb")
-        while True:
-            chunk = file.read(1)
-            if not chunk:
-                break
-            bitMapBytesArr.append(int.from_bytes(chunk, byteorder="big"))
-        return bitMapBytesArr
+        try:
+            file = open(path, "rb")
+            while True:
+                chunk = file.read(1)
+                if not chunk:
+                    break
+                bitMapBytesArr.append(int.from_bytes(chunk, byteorder="big"))
+
+            return bitMapBytesArr
+
+        except FileNotFoundError:
+            return Messages.FILE_PATH_NOT_VALID
 
     @staticmethod
     def write_bit_map_bytes_arr(path, bit_map):
-        file = open(path, "wb")
-        file.write(bytearray(bit_map))
+        try:
+            file = open(path, "wb")
+            file.write(bytearray(bit_map))
+        except FileNotFoundError:
+            return Messages.FILE_PATH_NOT_VALID
 
     @staticmethod
     def check_for_necessary_conventions(important_values_dic, secret_char_arr=""):
@@ -107,7 +115,7 @@ class SteganoMethods:
 
     @staticmethod
     def put_eight_bit_arr_in_bit_map_content_arr(decimal_bit_map_content_arr, eight_bit_arr, row_length, width):
-        index, modul = SteganoMethods.update_index(0, width * 3, width, row_length, False)
+        index, modul = SteganoMethods.update_index_and_modul(0, width * 3, width, row_length, False)
 
         for byte in eight_bit_arr:
             for bit_index in range(len(byte)):
@@ -121,13 +129,13 @@ class SteganoMethods:
                     if byte[bit_index] == '0':
                         decimal_bit_map_content_arr[index] = decimal_bit_map_content_arr[index] - 1
                     # else bit stays the same
-                index, modul = SteganoMethods.update_index(index, modul, width, row_length)
+                index, modul = SteganoMethods.update_index_and_modul(index, modul, width, row_length)
 
         return decimal_bit_map_content_arr
 
     @staticmethod
     def put_zero_byte_in_bit_map_content_arr(extended_bit_map_content_arr, starterIndex, row_length, width):
-        index, modul = SteganoMethods.update_index(starterIndex, width * 3, width, row_length, False)
+        index, modul = SteganoMethods.update_index_and_modul(starterIndex, width * 3, width, row_length, False)
 
         for i in range(8):
             if index >= len(extended_bit_map_content_arr):
@@ -136,7 +144,7 @@ class SteganoMethods:
             if extended_bit_map_content_arr[index] % 2 != 0:
                 extended_bit_map_content_arr[index] = extended_bit_map_content_arr[index] - 1
 
-            index, modul = SteganoMethods.update_index(index, modul, width, row_length)
+            index, modul = SteganoMethods.update_index_and_modul(index, modul, width, row_length)
 
         return extended_bit_map_content_arr
 
@@ -151,8 +159,8 @@ class SteganoMethods:
 
     @staticmethod
     def read_eight_bit_arr_from_bit_map_content_arr(decimal_byte_arr, width, off_bits, row_length):
-        decimal_content_byte_arr = decimal_byte_arr[off_bits:]
-        index, modul = SteganoMethods.update_index(0, width * 3, width, row_length, False)
+        decimal_content_byte_arr = decimal_byte_arr[off_bits:]  # cut off header
+        index, modul = SteganoMethods.update_index_and_modul(0, width * 3, width, row_length, False)
         eight_bit_arr = [""]
         eight_bit_arr_index = 0
 
@@ -169,12 +177,12 @@ class SteganoMethods:
                 eight_bit_arr.append("")
                 eight_bit_arr_index = eight_bit_arr_index + 1
 
-            index, modul = SteganoMethods.update_index(index, modul, width, row_length)
+            index, modul = SteganoMethods.update_index_and_modul(index, modul, width, row_length)
             if index > (len(decimal_content_byte_arr) - 1):
                 return eight_bit_arr
 
     @staticmethod
-    def update_index(index, modul, width, row_length, default_higher_index=True):
+    def update_index_and_modul(index, modul, width, row_length, default_higher_index=True):
         if default_higher_index:
             index = index + 1
 
@@ -214,3 +222,22 @@ class SteganoMethods:
             char_arr.append(chr(decimal_byte))
 
         return char_arr
+
+    @staticmethod
+    def retrieve_secret_from_decimal_byte_arr(bit_map_decimal_bytes_arr, important_values_dic):
+        eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(bit_map_decimal_bytes_arr,
+                                                                                   important_values_dic["width"],
+                                                                                   important_values_dic["off_bits"],
+                                                                                   important_values_dic["row_length"])
+        eight_bit_arr = SteganoMethods.remove_zero_byte_from_bit_map_arr(eight_bit_arr)
+        decimal_byte_arr = SteganoMethods.convert_eight_bit_arr_to_decimal_byte_arr(eight_bit_arr)
+        char_arr = SteganoMethods.convert_decimal_byte_arr_to_char_arr(decimal_byte_arr)
+        secret = SteganoMethods.assemble_char_arr(char_arr)
+        return secret
+
+    @staticmethod
+    def assemble_char_arr(char_arr):
+        string = ""
+        for char in char_arr:
+            string = string + char
+        return string

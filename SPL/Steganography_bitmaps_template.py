@@ -1,6 +1,8 @@
 # tkinter provides GUI objects and commands
+
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter import messagebox
 
 from Messages import Messages
 from SteganoMethods import SteganoMethods
@@ -33,7 +35,7 @@ def button_secret_load_click():
     try:
         with open(path_secret.get(), mode="rt", encoding="utf-8") as tf:
             secret = tf.read()
-    except:
+    except FileNotFoundError:
         label_secret_feedback["text"] = "An error occurred while reading the file."
         text_secret.delete("1.0", "end")
     else:
@@ -62,7 +64,7 @@ def button_secret_save_click():
         with open(path_secret.get(), mode="wt", encoding="utf-8") as tf:
             if tf.write(secret) != len(secret):
                 raise Exception
-    except:
+    except FileNotFoundError:
         label_secret_feedback["text"] = "An error occurred while saving to file."
     else:
         label_secret_feedback["text"] = "Secret saved successfully."
@@ -70,7 +72,7 @@ def button_secret_save_click():
 
 # This function is invoked by ButtonModeHideClick()
 # after the secret was hidden successfully.
-###### ENTER YOUR CODE HERE ######
+# --> ENTER YOUR CODE HERE
 def print_image_comparison(ImageDataOffset):
     text_mode.delete("1.0", "end")
     pass
@@ -99,54 +101,49 @@ def print_image_comparison(ImageDataOffset):
 #        LabelModeFeedback["text"] = "An error occurred displaying the two images"
 # This function is invoked when the user presses
 # the button "Hide secret in image".
-###### ENTER YOUR CODE HERE ######
+# --> ENTER YOUR CODE HERE
 def on_message_not_ok(message):
-    print(message)
-    pass
+    if isinstance(message, Messages):
+        if message != Messages.OK:
+            tk.messagebox.showerror(title="Error", message=message.value)
+            return False
+    return True
 
 
 def button_mode_hide_click():
     ClearFeedbackLabels()
+
     bit_map_bytes_arr = SteganoMethods.get_bit_map_bytes_arr(path_image.get())
+    if not on_message_not_ok(bit_map_bytes_arr): return
 
     important_values_dic = SteganoMethods.get_important_values(bit_map_bytes_arr)
     secret_word_char_arr = [char for char in text_secret.get("1.0", "end")]
     message = SteganoMethods.check_for_necessary_conventions(important_values_dic, secret_word_char_arr)
-
-    if message != Messages.OK:
-        on_message_not_ok(message)
-        return
+    if not on_message_not_ok(message): return
 
     finished_bit_map_arr = SteganoMethods.plant_secret_in_bit_map_arr(bit_map_bytes_arr,
                                                                       secret_word_char_arr,
                                                                       important_values_dic)
 
-    SteganoMethods.write_bit_map_bytes_arr("./a.bmp", finished_bit_map_arr)
+    message = SteganoMethods.write_bit_map_bytes_arr("./a.bmp", finished_bit_map_arr)
+    if not on_message_not_ok(message): return
 
 
 # This function is invoked when the user presses
 # the button "Disclose secret from image".
-###### ENTER YOUR CODE HERE ######
+# --> ENTER YOUR CODE HERE
 def button_mode_disclose_click():
     ClearFeedbackLabels()
+
     bit_map_decimal_bytes_arr = SteganoMethods.get_bit_map_bytes_arr(path_image.get())
+    on_message_not_ok(bit_map_decimal_bytes_arr)
+
     important_values_dic = SteganoMethods.get_important_values(bit_map_decimal_bytes_arr)
-
     message = SteganoMethods.check_for_necessary_conventions(important_values_dic)
-    if message != Messages.OK:
-        on_message_not_ok(message)
-        return
+    if not on_message_not_ok(message): return
 
-    eight_bit_arr = SteganoMethods.read_eight_bit_arr_from_bit_map_content_arr(bit_map_decimal_bytes_arr,
-                                                                               important_values_dic["width"],
-                                                                               important_values_dic["off_bits"],
-                                                                               important_values_dic["row_length"])
-    eight_bit_arr = SteganoMethods.remove_zero_byte_from_bit_map_arr(eight_bit_arr)
-    decimal_byte_arr = SteganoMethods.convert_eight_bit_arr_to_decimal_byte_arr(eight_bit_arr)
-    char_arr = SteganoMethods.convert_decimal_byte_arr_to_char_arr(decimal_byte_arr)
-    secret = ""
-    for char in char_arr:
-        secret = secret + char
+    secret = SteganoMethods.retrieve_secret_from_decimal_byte_arr(bit_map_decimal_bytes_arr, important_values_dic)
+
     text_secret.insert("1.0", secret)
 
 

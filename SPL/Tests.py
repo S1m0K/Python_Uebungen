@@ -100,28 +100,28 @@ class Tests(unittest.TestCase):
         index = 7
         width = 3
         modul = width * 3
-        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 12)
+        updated_index, updated_modul = SteganoMethods.update_index_and_modul(index, modul, width, 12)
         self.assertEqual(8, updated_index)
         self.assertEqual(9, updated_modul)
 
         index = 8
         width = 3
         modul = width * 3
-        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 12)
+        updated_index, updated_modul = SteganoMethods.update_index_and_modul(index, modul, width, 12)
         self.assertEqual(12, updated_index)
         self.assertEqual(21, updated_modul)
 
         index = 14
         width = 5
         modul = width * 3
-        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 16)
+        updated_index, updated_modul = SteganoMethods.update_index_and_modul(index, modul, width, 16)
         self.assertEqual(16, updated_index)
         self.assertEqual(15 + 16, updated_modul)
 
         index = 0
         width = 5
         modul = width * 3
-        updated_index, updated_modul = SteganoMethods.update_index(index, modul, width, 16, False)
+        updated_index, updated_modul = SteganoMethods.update_index_and_modul(index, modul, width, 16, False)
         self.assertEqual(0, updated_index)
         self.assertEqual(modul, updated_modul)
 
@@ -172,6 +172,11 @@ class Tests(unittest.TestCase):
         char_arr = ['L', 'u', 'd', 'w', 'i', 'g', 'L', 'u', 'd', 'w', 'i', 'g']
         message = SteganoMethods.check_for_necessary_conventions(important_values_dic, char_arr)
         self.assertTrue(Messages.SECRET_TO_LONG, message)
+
+    def test_assemble_char_arr(self):
+        char_arr = ['L', 'u', 'd', 'w', 'i', 'g']
+        output = SteganoMethods.assemble_char_arr(char_arr)
+        self.assertEqual("Ludwig", output)
 
 
 if __name__ == '__main__':
