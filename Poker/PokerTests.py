@@ -9,14 +9,14 @@ class PokerTests(unittest.TestCase):
     com_bool = [[False, False, False, False, False, False, False, False, False]]
 
     def test_straight_flush(self):
-        hand = [[0, 12], [0, 10], [0, 11], [0, 9], [0, 8]]
+        hand = [[0, 12], [0, 10], [0, 11], [0, 9], [0, 0]]
         hand = hand + copy.deepcopy(self.com_bool)
         ah = PokerMethods.analyze_hand(hand.copy())
         self.assertEqual(True, ah[-1][0])
         self.assertEqual(False, ah[-1][1])
         self.assertEqual(False, ah[-1][2])
-        self.assertEqual(True, ah[-1][3])
-        self.assertEqual(True, ah[-1][4])
+        self.assertEqual(False, ah[-1][3])
+        self.assertEqual(False, ah[-1][4])
         self.assertEqual(False, ah[-1][5])
         self.assertEqual(False, ah[-1][6])
         self.assertEqual(False, ah[-1][7])
@@ -31,9 +31,9 @@ class PokerTests(unittest.TestCase):
         self.assertEqual(False, ah[-1][2])
         self.assertEqual(False, ah[-1][3])
         self.assertEqual(False, ah[-1][4])
-        self.assertEqual(True, ah[-1][5])
-        self.assertEqual(True, ah[-1][6])
-        self.assertEqual(True, ah[-1][7])
+        self.assertEqual(False, ah[-1][5])
+        self.assertEqual(False, ah[-1][6])
+        self.assertEqual(False, ah[-1][7])
         self.assertEqual(False, ah[-1][8])
 
     def test_full_house(self):
@@ -45,9 +45,9 @@ class PokerTests(unittest.TestCase):
         self.assertEqual(True, ah[-1][2])
         self.assertEqual(False, ah[-1][3])
         self.assertEqual(False, ah[-1][4])
-        self.assertEqual(True, ah[-1][5])
-        self.assertEqual(True, ah[-1][6])
-        self.assertEqual(True, ah[-1][7])
+        self.assertEqual(False, ah[-1][5])
+        self.assertEqual(False, ah[-1][6])
+        self.assertEqual(False, ah[-1][7])
         self.assertEqual(False, ah[-1][8])
 
     def test_flush(self):
@@ -89,7 +89,7 @@ class PokerTests(unittest.TestCase):
         self.assertEqual(False, ah[-1][4])
         self.assertEqual(True, ah[-1][5])
         self.assertEqual(False, ah[-1][6])
-        self.assertEqual(True, ah[-1][7])
+        self.assertEqual(False, ah[-1][7])
         self.assertEqual(False, ah[-1][8])
 
     def test_double_pair(self):
@@ -103,7 +103,7 @@ class PokerTests(unittest.TestCase):
         self.assertEqual(False, ah[-1][4])
         self.assertEqual(False, ah[-1][5])
         self.assertEqual(True, ah[-1][6])
-        self.assertEqual(True, ah[-1][7])
+        self.assertEqual(False, ah[-1][7])
         self.assertEqual(False, ah[-1][8])
 
     def test_pair(self):

@@ -5,6 +5,15 @@ import numpy as np
 
 class PokerMethods:
     @staticmethod
+    def set_only_best_comb_true(h):
+        setFalse = False
+        for i in range(len(h[-1])):
+            if setFalse:
+                h[-1][i] = False
+            elif h[-1][i]:
+                setFalse = True
+
+    @staticmethod
     def draw_random(arr, cnt):
         for j in range(cnt):
             r = random.randint(0, 51 - j)
@@ -72,7 +81,17 @@ class PokerMethods:
 
             if cnt >= 4:
                 h[-1][4] = True
+        if not h[-1][4] and (0 in numbers) and len(numbers) == 5:
+            numbers.put(0, 13)
+            numbers = sorted(numbers)
+            for j in range(len(numbers) - 1):
+                if numbers[j] == (numbers[j + 1] - 1):
+                    cnt = cnt + 1
+                else:
+                    cnt = 0
 
+                if cnt >= 4:
+                    h[-1][4] = True
         # STRAIGHT FLUSH CHECK
         if h[-1][4] and h[-1][3]:
             h[-1][0] = True
@@ -84,7 +103,7 @@ class PokerMethods:
                 com_cnt = com_cnt + 1
         if com_cnt == 0:
             h[-1][8] = True
-
+        PokerMethods.set_only_best_comb_true(h)
         return h
 
     @staticmethod

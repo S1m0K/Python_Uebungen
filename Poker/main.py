@@ -18,7 +18,7 @@ poker_combination_dic = {
 
 if __name__ == '__main__':
     card_cnt = 5
-    rounds_played = 1000000
+    rounds_played = 100000
     for i in range(rounds_played):
         one = PokerMethods.draw_hand_and_analyze(card_cnt)
         for g in range(len(one[-1])):
